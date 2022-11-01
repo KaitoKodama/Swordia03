@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CMN;
 
 public class ActorController : MonoBehaviour
 {
@@ -56,15 +57,6 @@ public class ActorController : MonoBehaviour
     }
     private void RemoveActor(ref List<Actor> actorList, Actor removeActor)
     {
-        var tmpList = new List<Actor>();
-        actorList.Remove(removeActor);
-
-        foreach (var el in actorList)
-        {
-            if (el != null)
-                tmpList.Add(el);
-        }
-        actorList.Clear();
-        actorList = tmpList;
+        actorList = Utility.GetTrimmedList(actorList, removeActor);
     }
 }

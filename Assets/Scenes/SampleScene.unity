@@ -1105,11 +1105,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actorParams:
-  - {fileID: 11400000, guid: 26fba9d1f426cef4894f0a8763a745f7, type: 2}
-  - {fileID: 11400000, guid: 8bca4eefb6ebece439a5b075e621ccce, type: 2}
-  - {fileID: 11400000, guid: d8adb06f5c6e29247ba4ce4aa5e8fd6c, type: 2}
-  - {fileID: 11400000, guid: 95baca2ac37c867478356d0e7265d7f4, type: 2}
-  - {fileID: 11400000, guid: 3f2d355fa6f63b942bb1e07286f58fab, type: 2}
+  - {fileID: 11400000, guid: 61e03ab335af1fe43b84d7b9eb5eee01, type: 2}
+  - {fileID: 11400000, guid: d82b4e76ec894be4bb1ae298a7ceaeaa, type: 2}
+  - {fileID: 11400000, guid: 4ee375268d264d5419d3251fb68659a3, type: 2}
+  - {fileID: 11400000, guid: dffbde715622a1e48b459e8737d34fe4, type: 2}
+  - {fileID: 11400000, guid: e4aa64c5461efbf429df3ef40cd3138e, type: 2}
+  - {fileID: 11400000, guid: a563ba3f3aecc59418a22f82fabd9942, type: 2}
+  - {fileID: 11400000, guid: ef6ea0c5596014a429c917e8c61fd276, type: 2}
+  - {fileID: 11400000, guid: e5b51f50eb6294941a11ee78b63b950b, type: 2}
+  - {fileID: 11400000, guid: 99dc5b273be8c564a85481b4fe508318, type: 2}
+  - {fileID: 11400000, guid: 95f8111a9f3225143a1411c68e437a9e, type: 2}
 --- !u!4 &659132119
 Transform:
   m_ObjectHideFlags: 0
@@ -2599,23 +2604,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actorPrefab: {fileID: 1459135384697802254, guid: 2323b4b2e7353b844ab94b31941d3394, type: 3}
-  pointsOfField:
-  - point: {x: 3, y: -2, z: 0}
-    depth: 0
-  - point: {x: 5, y: -3, z: 0}
-    depth: 1
-  - point: {x: 6, y: -1, z: 0}
-    depth: -1
-  locationals:
-  - origin: {x: 3, y: -2, z: 0}
-    isFlipX: 0
-    depth: 0
-  - origin: {x: 5, y: -3, z: 0}
-    isFlipX: 0
-    depth: 1
-  - origin: {x: 6, y: -1, z: 0}
-    isFlipX: 0
-    depth: -1
 --- !u!1 &1403739536
 GameObject:
   m_ObjectHideFlags: 0

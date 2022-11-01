@@ -138,6 +138,16 @@ namespace CMN
 			T targetEnum = (T)Enum.ToObject(typeof(T), targetInt);
 			return targetEnum;
 		}
+		public static List<T> GetTrimmedList<T>(List<T> list, T remove)
+        {
+			var tmpList = new List<T>();
+			list.Remove(remove);
+			foreach (var el in list)
+				if (el != null)
+					tmpList.Add(el);
+			list.Clear();
+			return tmpList;
+		}
 		public static bool Probability(float fPercent)
 		{
 			float fProbabilityRate = UnityEngine.Random.value * 100.0f;
