@@ -6,18 +6,21 @@ using CMN;
 public class ActorController : MonoBehaviour
 {
     [SerializeField] Actor actorPrefab = default;
+
     private List<LocationalStatus> locationals = new List<LocationalStatus>()
     {
         new LocationalStatus(new Vector3(3f, -2f, 0f), 0),
         new LocationalStatus(new Vector3(5f, -3f, 0f), 1),
         new LocationalStatus(new Vector3(6f, -1f, 0f), -1),
     };
-
     private List<Actor> fieldOfEnemies;
     private List<Actor> fieldOfPlayers;
     private int maxFieldActor = 3;
 
 
+    //------------------------------------------
+    // Unityランタイム
+    //------------------------------------------
     private void Start()
     {
         fieldOfEnemies = new List<Actor>(maxFieldActor);
@@ -34,6 +37,19 @@ public class ActorController : MonoBehaviour
         }
     }
 
+
+    //------------------------------------------
+    // デリゲート受信
+    //------------------------------------------
+    private void OnDeathNotifyerReciever()
+    {
+
+    }
+
+
+    //------------------------------------------
+    // 内部共有関数
+    //------------------------------------------
     private void GenerateEnemies()
     {
         var enemyParams = Locator<Database>.I.GetActorParams(false);

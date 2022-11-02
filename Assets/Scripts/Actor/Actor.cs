@@ -20,6 +20,7 @@ public class Actor : MonoBehaviour, IApplyEffect
     public float Defence { get; private set; }
     public float SatisfactRate { get; private set; }
     public float EscapeRate { get; private set; }
+    public bool IsDeath { get; private set; }
     public void Init(SO_Param param, LocationalStatus locational)
     {
         this.param = param;
@@ -85,6 +86,13 @@ public class Actor : MonoBehaviour, IApplyEffect
 
 
     //------------------------------------------
+    // デリゲート通知
+    //------------------------------------------
+    public delegate void OnDeathNotifyer();
+    public OnDeathNotifyer OnDeathNotifyerHandler;
+
+
+    //------------------------------------------
     // インターフェイス
     //------------------------------------------
     public void AddAbnormalStatus(AbnormalStatus status)
@@ -109,7 +117,15 @@ public class Actor : MonoBehaviour, IApplyEffect
     }
     public void ApplyHP(float value)
     {
-        HP = Mathf.Clamp(HP + value, 0, param.MaxHP * 2);
+        if (!IsDeath)
+        {
+            HP = Mathf.Clamp(HP + value, 0, param.MaxHP * 2);
+            if (HP <= 0)
+            {
+                OnDeathNotifyerHandler?.Invoke();
+                IsDeath = true;
+            }
+        }
     }
     public void ApplyMP(float value)
     {

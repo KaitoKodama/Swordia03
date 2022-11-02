@@ -102,6 +102,10 @@ public enum AbnormalStatusType
 {
 	Poison, Sleep, Palsy
 }
+public enum RoleOfActor
+{
+	Player, Enemy
+}
 
 
 //------------------------------------------
