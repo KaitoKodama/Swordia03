@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CC;
 
 
 //------------------------------------------
@@ -23,6 +24,41 @@ public class AnyDictionary<Tkey, Tvalue>
 		this.key = pair.Key;
 		this.value = pair.Value;
     }
+}
+[System.Serializable]
+public class ActorSet<T> where T : Pawn
+{
+	private List<Location> locations = new List<Location>()
+	{
+		new Location(new Vector3(3f, -2f, 0f), 0),
+		new Location(new Vector3(5f, -3f, 0f), 1),
+		new Location(new Vector3(6f, -1f, 0f), -1),
+	};
+
+	public List<Actor> actors = new List<Actor>();
+	public delegate void OnRemoveActorComplete();
+	public OnRemoveActorComplete OnRemoveActorCompleteHandler;
+
+
+	public ActorSet(OnRemoveActorComplete handler)
+    {
+		OnRemoveActorCompleteHandler = handler;
+	}
+	public void Add(GameObject obj, SO_Param param, int index)
+	{
+		var loc = locations[index];
+		var actor = obj.GetComponent<Actor>();
+		actor.Init<T>(param, loc);
+		actors.Add(actor);
+	}
+	public void Remove(Actor remove)
+	{
+		Utility.SetRemovedList(ref actors, remove, (el) => el != null);
+		if (actors == null || actors.Count == 0)
+        {
+			OnRemoveActorCompleteHandler?.Invoke();
+		}
+	}
 }
 [System.Serializable]
 public struct AbnormalStatus
@@ -48,51 +84,22 @@ public struct AbnormalStatus
 	public int Keep => keep;
 }
 [System.Serializable]
-public struct LocationalStatus
+public struct Location
 {
-	private Vector3 origin;
-	private bool isFlipX;
-	private int depth;
+	public Vector3 origin;
+	public int depth;
 
-
-	public LocationalStatus(Vector3 origin, int depth, bool isFlipX = false)
+	public Location(Vector3 origin, int depth)
     {
 		this.origin = origin;
 		this.depth = depth;
-		this.isFlipX = isFlipX;
 	}
-
-
-	public void SetAsLeftSide()
-    {
-		origin.x *= -1;
-		isFlipX = false;
-	}
-	public void SetAsRightSide()
-    {
-		isFlipX = true;
-    }
-	public Vector3 Origin => origin;
-	public bool IsFlipX => isFlipX;
-	public int Depth => depth;
 }
 
 
 //------------------------------------------
 // インターフェイス
 //------------------------------------------
-public interface IApplyEffect
-{
-	void AddAbnormalStatus(AbnormalStatus status);
-	void RemoveAbnormalStatus(AbnormalStatusType removeType);
-	void ApplyHP(float value);
-	void ApplyMP(float value);
-	void ApplySpeed(float value);
-	void ApplyPower(float value);
-	void ApplyDefence(float value);
-	void ApplySatisfactRate(float value);
-	void ApplyEscapeRate(float value);
-}
 
 
 //------------------------------------------
@@ -102,7 +109,7 @@ public enum AbnormalStatusType
 {
 	Poison, Sleep, Palsy
 }
-public enum RoleOfActor
+public enum Role
 {
 	Player, Enemy
 }
@@ -111,7 +118,7 @@ public enum RoleOfActor
 //------------------------------------------
 // ユーティリティ
 //------------------------------------------
-namespace CMN
+namespace CC
 {
 	public static class Utility
 	{
@@ -142,15 +149,33 @@ namespace CMN
 			T targetEnum = (T)Enum.ToObject(typeof(T), targetInt);
 			return targetEnum;
 		}
-		public static List<T> GetTrimmedList<T>(List<T> list, T remove)
+		public static T GetRndFromList<T>(List<T> list)
+		{
+			int i = UnityEngine.Random.Range(0, list.Count);
+			return list[i];
+		}
+		public static void SetRemovedList<T>(ref List<T> list, T remove, Func<T, bool> predicate, Action<T> inLoop = null)
         {
 			var tmpList = new List<T>();
 			list.Remove(remove);
 			foreach (var el in list)
-				if (el != null)
-					tmpList.Add(el);
+            {
+				if (inLoop != null) inLoop(el);
+				if (predicate(el)) tmpList.Add(el);
+			}
+            list.Clear();
+			list = tmpList;
+		}
+		public static void SetTrimmedList<T>(ref List<T> list, Func<T, bool> predicate, Action<T> inLoop = null)
+		{
+			var tmpList = new List<T>();
+			foreach (var el in list)
+			{
+				if (inLoop != null) inLoop(el);
+				if (predicate(el)) tmpList.Add(el);
+			}
 			list.Clear();
-			return tmpList;
+			list = tmpList;
 		}
 		public static bool Probability(float fPercent)
 		{

@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Params", menuName = "ScriptableObject/ƒpƒ‰ƒ[ƒ^")]
 public class SO_Param : ScriptableObject
 {
+    [SerializeField] List<SkillBase> skillList = default;
     [SerializeField] Sprite selfSprite = default;
     [SerializeField] string actorName = default;
     [SerializeField] float speed = default;
@@ -13,6 +14,7 @@ public class SO_Param : ScriptableObject
     [SerializeField] bool isOnlyForPlayer = false;
 
 
+    public List<SkillBase> SkillList => skillList;
     public Sprite SelfSprite => selfSprite;
     public string ActorName => actorName;
     public float Speed => speed;

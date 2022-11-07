@@ -1,2 +1,0 @@
-Actor(cs)を継承したRolePlayer、RoleEnemyで処理、メンバ変数を分ける(共通じゃないものに限り)と、LocationalState他スクリプトを削減
-又は、SubClassOf()的なメソッドで種類を見分けれるはず。列挙で見分けるよりスマートなはず

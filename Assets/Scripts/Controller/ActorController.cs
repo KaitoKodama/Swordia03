@@ -1,20 +1,24 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CMN;
 
 public class ActorController : MonoBehaviour
 {
-    [SerializeField] Actor actorPrefab = default;
+    /*
+     * 
+     * 期待の経過
+     * プレイヤがアクター毎のコマンド、対象キャラを選択
+     * 敵がアクター毎のコマンド、対象キャラを選択
+     * パラメータ(Speed)が早い順にそれぞれ選択したアクタースキルを実行
+     * 
+     */
 
-    private List<LocationalStatus> locationals = new List<LocationalStatus>()
-    {
-        new LocationalStatus(new Vector3(3f, -2f, 0f), 0),
-        new LocationalStatus(new Vector3(5f, -3f, 0f), 1),
-        new LocationalStatus(new Vector3(6f, -1f, 0f), -1),
-    };
-    private List<Actor> fieldOfEnemies;
-    private List<Actor> fieldOfPlayers;
+
+
+    [SerializeField] Actor prefab = default;
+    [SerializeField] ActorSet<PawnEnemy> enemeies;
+    [SerializeField] ActorSet<PawnPlayer> players;
     private int maxFieldActor = 3;
 
 
@@ -23,17 +27,28 @@ public class ActorController : MonoBehaviour
     //------------------------------------------
     private void Start()
     {
-        fieldOfEnemies = new List<Actor>(maxFieldActor);
-        fieldOfPlayers = new List<Actor>(maxFieldActor);
-
+        enemeies = new ActorSet<PawnEnemy>(OnEnemyRemoveComplete);
+        players = new ActorSet<PawnPlayer>(OnPlayerRemoveComplete);
         GenerateEnemies();
-        var selectedIDs = GameManager.instance.SelectedIDs;
-        var playerParams = Locator<Database>.I.GetActorParamFromIDs(selectedIDs);
-        for (int i = 0; i < playerParams.Count; i++)
+        GeneratePlayer();
+    }
+
+
+    //------------------------------------------
+    // 外部共有関数
+    //------------------------------------------
+    public ActorSet<PawnEnemy> Enemeies => enemeies;
+    public ActorSet<PawnPlayer> Players => players;
+    public void OnExcute()
+    {
+        var tmpList = new List<Actor>(maxFieldActor * 2);
+        tmpList.AddRange(enemeies.actors);
+        tmpList.AddRange(players.actors);
+        tmpList = tmpList.OrderBy(x => x.Speed).ToList();
+
+        foreach (var tmp in tmpList)
         {
-            var locational = locationals[i];
-            locational.SetAsLeftSide();
-            AddActor(ref fieldOfPlayers, playerParams[i], locational);
+            tmp.Excute();
         }
     }
 
@@ -41,9 +56,13 @@ public class ActorController : MonoBehaviour
     //------------------------------------------
     // デリゲート受信
     //------------------------------------------
-    private void OnDeathNotifyerReciever()
+    private void OnEnemyRemoveComplete()
     {
-
+        GenerateEnemies();
+    }
+    private void OnPlayerRemoveComplete()
+    {
+        Debug.Log("OnPlayerRemoveComplete");
     }
 
 
@@ -57,22 +76,16 @@ public class ActorController : MonoBehaviour
         for (int i = 0; i < fieldOfEnemyNum; i++)
         {
             var param = enemyParams[Random.Range(0, enemyParams.Count)];
-            var locational = locationals[i];
-            locational.SetAsRightSide();
-            AddActor(ref fieldOfEnemies, param, locational);
+            enemeies.Add(Instantiate(prefab.gameObject), param, i);
         }
     }
-    private void AddActor(ref List<Actor> actorList, SO_Param param, LocationalStatus locational)
+    private void GeneratePlayer()
     {
-        var obj = Instantiate(actorPrefab.gameObject, locational.Origin, Quaternion.identity);
-        obj.transform.SetParent(transform);
-
-        var actor = obj.GetComponent<Actor>();
-        actor.Init(param, locational);
-        actorList.Add(actor);
-    }
-    private void RemoveActor(ref List<Actor> actorList, Actor removeActor)
-    {
-        actorList = Utility.GetTrimmedList(actorList, removeActor);
+        var selectedIDs = GameManager.instance.SelectedIDs;
+        var playerParams = Locator<Database>.I.GetActorParamFromIDs(selectedIDs);
+        for (int i = 0; i < playerParams.Count; i++)
+        {
+            players.Add(Instantiate(prefab.gameObject), playerParams[i], i);
+        }
     }
 }
